@@ -6,7 +6,6 @@ import ru.javawebinar.topjava.model.UserMealWithExcess;
 import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class UserMealsUtil {
     public static void main(String[] args) {
@@ -50,12 +49,12 @@ public class UserMealsUtil {
 
         return meals.stream()
                 .filter(meal -> TimeUtil.isBetweenHalfOpen(meal.getDateTime().toLocalTime(), startTime, endTime))
-                .map(meal -> {
-                    LocalDate date = meal.getDateTime().toLocalDate();
-                    int dailyCalories = dailyCaloriesMap.getOrDefault(date, 0);
-                    boolean excess = dailyCalories > caloriesPerDay;
-                    return new UserMealWithExcess(meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
-                })
+                .map(meal ->    new UserMealWithExcess(
+                        meal.getDateTime(),
+                        meal.getDescription(),
+                        meal.getCalories(),
+                        dailyCaloriesMap.get(meal.getDateTime().toLocalDate()) > caloriesPerDay
+                ))
                 .collect(Collectors.toList());
     }
 }
